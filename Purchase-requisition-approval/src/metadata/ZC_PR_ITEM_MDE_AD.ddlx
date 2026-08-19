@@ -1,0 +1,80 @@
+//----------------------------------------------------------------------
+// Extension: ZC_PR_ITEM_MDE_AD (metadata extension)
+// Purpose: Fiori Elements UI annotations for the item table shown in
+//          the "Items" facet of the ZC_PR_HEADER_AD Object Page
+// Layer:   Metadata Extension (.ddlx)
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: targets ZC_PR_ITEM_AD (projection/consumption view), not the
+//       interface view - UI annotations always belong on the
+//       consumption layer.
+// Note: reached via the header's _Item composition (see
+//       ZC_PR_HEADER_MDE_AD's "Items" facet, type #LINEITEM_REFERENCE,
+//       targetElement: '_Item') - the columns shown there are exactly
+//       the @UI.lineItem entries below.
+// Note: @UI.headerInfo is intentionally NOT used here - this
+//       environment rejects it ("used at wrong position (wrong
+//       scope)") on both this (non-root) and the header (root) view;
+//       see docs/type-table-for-update-workaround.md. It only affects
+//       the Object Page title styling, not functionality.
+// Note: every annotated element must carry at least one annotation on
+//       this environment - Unit and Currency (the semantic units for
+//       Quantity and Price/Amount) get an explicit @UI.hidden: true
+//       instead of being listed bare.
+// Note: Amount is calculated by LHC_PURCHASEREQUISITIONITEM=>calculateItemAmount
+//       (Quantity * Price) and is readonly at the behavior definition
+//       level - it is only ever displayed here, never entered.
+// Note: no admin/technical field (CreatedBy/At, LastChangedBy/At,
+//       LocalLastChangedAt) or technical key (ItemUuid, ParentUuid) is
+//       annotated with @UI.lineItem/@UI.fieldGroup, so none of them
+//       appear in the table.
+//----------------------------------------------------------------------
+@Metadata.layer: #CORE
+
+annotate view ZC_PR_ITEM_AD with
+{
+  @UI.lineItem: [{ position: 10 }]
+  ItemNumber;
+
+  @UI.lineItem: [{ position: 20 }]
+  Material;
+
+  @UI.lineItem: [{ position: 30 }]
+  Description;
+
+  @UI.lineItem: [{ position: 40 }]
+  Quantity;
+
+  @UI.hidden: true
+  Unit;
+
+  @UI.lineItem: [{ position: 50 }]
+  Price;
+
+  @UI.lineItem: [{ position: 60 }]
+  Amount;
+
+  @UI.hidden: true
+  Currency;
+
+  @UI.hidden: true
+  ItemUuid;
+
+  @UI.hidden: true
+  ParentUuid;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

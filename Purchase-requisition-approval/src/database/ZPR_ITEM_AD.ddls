@@ -1,0 +1,62 @@
+@EndUserText.label : 'Purchase Requisition - Item (Persistence)'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+//----------------------------------------------------------------------
+// Table:   ZPR_ITEM_AD
+// Purpose: Persistence table for Purchase Requisition item
+//          (child in managed RAP composition)
+// Layer:   Database
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: item_uuid is the technical key; parent_uuid links each item to
+//       its ZPR_HEADER_AD parent - this is the foundation of the RAP
+//       composition (to-parent association).
+// Note: amount is filled by a determination (quantity * price).
+// Note: quantity/price/amount use abap.decfloat34 instead of
+//       abap.quan/abap.curr - see
+//       docs/type-table-for-update-workaround.md for why (CURR/QUAN
+//       mandate a reference-field currency/unit-of-measure check that
+//       depends on a non-released system table on this environment).
+//       Unit/Currency stay as plain abap.unit(3)/abap.cuky for the same
+//       reason - they no longer carry a domain-based value table.
+// Note: Admin fields mirror the header for symmetry (both
+//       last_changed_at total ETag and local_last_changed_at present).
+//----------------------------------------------------------------------
+define table zpr_item_ad {
+
+  key client                 : abap.clnt not null;
+  key item_uuid               : sysuuid_x16 not null;
+      // composition link to ZPR_HEADER_AD.pr_uuid (to-parent association)
+      parent_uuid             : sysuuid_x16;
+      @EndUserText.label : 'Item Number'
+      item_number             : abap.numc(5);
+      @EndUserText.label : 'Material'
+      material                : matnr;
+      @EndUserText.label : 'Description'
+      description             : abap.char(80);
+      @EndUserText.label : 'Quantity'
+      quantity                : abap.decfloat34;
+      @EndUserText.label : 'Unit'
+      unit                    : abap.unit(3);
+      @EndUserText.label : 'Price'
+      price                   : abap.decfloat34;
+      @EndUserText.label : 'Amount'
+      amount                  : abap.decfloat34;
+      @EndUserText.label : 'Currency'
+      currency                : abap.cuky;
+      @EndUserText.label : 'Created By'
+      created_by              : syuname;
+      @EndUserText.label : 'Created At'
+      created_at              : timestampl;
+      @EndUserText.label : 'Last Changed By'
+      last_changed_by         : syuname;
+      // total ETag - kept for symmetry with header
+      @EndUserText.label : 'Last Changed At (Total ETag)'
+      last_changed_at         : timestampl;
+      // required for optimistic locking (managed RAP concurrency control)
+      @EndUserText.label : 'Local Last Changed At'
+      local_last_changed_at   : timestampl;
+
+}

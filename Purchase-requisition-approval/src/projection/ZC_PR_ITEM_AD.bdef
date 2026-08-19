@@ -1,0 +1,29 @@
+//----------------------------------------------------------------------
+// Behavior Projection: ZC_PR_ITEM_AD
+// Purpose: Exposes update, delete, and the to-parent association from
+//          ZI_PR_ITEM_AD's behavior definition to the consumption layer
+// Layer:   Projection
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: no create here - items are created through the header's
+//       exposed "use association _Item { create; with draft; }" in
+//       ZC_PR_HEADER_AD.bdef, not through this file.
+// Note: no "with draft;" here - draft handling is declared once, at
+//       the header projection level (ZC_PR_HEADER_AD.bdef), not repeated
+//       for the item.
+// Note: determinations (setItemNumber, setItemCurrency,
+//       calculateItemAmount) from ZI_PR_ITEM_AD's behavior definition
+//       apply automatically and are not redeclared at the projection
+//       level.
+// Note: strict ( 2 ) is only declared once, at the header projection
+//       level (ZC_PR_HEADER_AD.bdef), and is not repeated here.
+//----------------------------------------------------------------------
+projection;
+
+define behavior for ZC_PR_ITEM_AD alias PurchaseRequisitionItem
+{
+  use update;
+  use delete;
+
+  use association _Header;
+}

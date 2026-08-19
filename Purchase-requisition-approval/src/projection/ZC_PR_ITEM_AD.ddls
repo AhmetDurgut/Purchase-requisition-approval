@@ -1,0 +1,44 @@
+//----------------------------------------------------------------------
+// View:    ZC_PR_ITEM_AD
+// Purpose: Projection (consumption) view for the Purchase Requisition
+//          item, built on ZI_PR_ITEM_AD
+// Layer:   Projection
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: no provider contract needed - this is a composition child, not
+//       a root, same as ZI_PR_ITEM_AD at the interface layer.
+// Note: exposes all fields from ZI_PR_ITEM_AD, including admin fields
+//       (visibility is handled later by the metadata extension, not
+//       here).
+// Note: the association to parent is redirected to ZC_PR_HEADER_AD,
+//       mirroring ZC_PR_HEADER_AD's redirected composition to this view.
+// Note: @Metadata.allowExtensions: true is required here so the
+//       metadata extension (ZC_PR_ITEM_MDE_AD, created separately) can
+//       attach to this view instead of the interface view.
+//----------------------------------------------------------------------
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+@EndUserText.label: 'Purchase Requisition - Item (Projection)'
+
+define view entity ZC_PR_ITEM_AD
+  as projection on ZI_PR_ITEM_AD as PurchaseRequisitionItem
+{
+  key ItemUuid,
+      ParentUuid,
+      ItemNumber,
+      Material,
+      Description,
+      Quantity,
+      Unit,
+      Price,
+      Amount,
+      Currency,
+      CreatedBy,
+      CreatedAt,
+      LastChangedBy,
+      LastChangedAt,
+      LocalLastChangedAt,
+
+      // redirected to-parent association - target changes to ZC_PR_HEADER_AD
+      _Header : redirected to parent ZC_PR_HEADER_AD
+}

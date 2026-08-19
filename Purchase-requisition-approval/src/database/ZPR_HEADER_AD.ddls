@@ -1,0 +1,53 @@
+@EndUserText.label : 'Purchase Requisition - Header (Persistence)'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+//----------------------------------------------------------------------
+// Table:   ZPR_HEADER_AD
+// Purpose: Persistence table for Purchase Requisition header
+//          (managed RAP business object)
+// Layer:   Database
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: Technical key is a UUID (pr_uuid, raw16); pr_number is the
+//       human-readable business key, filled by a determination on
+//       submit via a number range.
+// Note: total_amount uses abap.decfloat34 instead of abap.curr - see
+//       docs/type-table-for-update-workaround.md for why (CURR
+//       mandates a reference-field currency check that depends on a
+//       non-released system table on this environment). currency
+//       stays as plain abap.cuky for the same reason - it no longer
+//       carries a domain-based value table (waers/TCURC).
+// Note: Admin fields are required by managed RAP - created_by/at,
+//       last_changed_by/at, and especially local_last_changed_at
+//       for optimistic concurrency control (ETag).
+//----------------------------------------------------------------------
+define table zpr_header_ad {
+
+  key client            : abap.clnt not null;
+  key pr_uuid           : sysuuid_x16 not null;
+  @EndUserText.label : 'PR Number'
+  pr_number             : abap.char(10);
+  @EndUserText.label : 'Description'
+  description           : abap.char(80);
+  requester             : syuname;
+  cost_center            : kostl;
+  @EndUserText.label : 'Total Amount'
+  @AbapCatalog.decfloat.outputStyle : #NORMAL
+  total_amount          : abap.decfloat34;
+  @EndUserText.label : 'Currency'
+  currency              : abap.cuky;
+  @EndUserText.label : 'Status'
+  status                : abap.char(12);
+  approver              : syuname;
+  approved_at            : timestampl;
+  @EndUserText.label : 'Rejection Reason'
+  reject_reason          : abap.char(200);
+  created_by             : syuname;
+  created_at             : timestampl;
+  last_changed_by        : syuname;
+  last_changed_at        : timestampl;
+  local_last_changed_at  : timestampl;
+
+}

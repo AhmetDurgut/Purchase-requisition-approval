@@ -1,0 +1,46 @@
+//----------------------------------------------------------------------
+// View:    ZC_PR_HEADER_AD
+// Purpose: Projection (consumption) view for the Purchase Requisition
+//          RAP BO, built on ZI_PR_HEADER_AD
+// Layer:   Projection
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: provider contract transactional_query is used - no additional
+//       query customization needed beyond the interface view.
+// Note: exposes all fields from ZI_PR_HEADER_AD, including
+//       StatusCriticality (needed by the metadata extension's
+//       criticality binding) and the composition to _Item, which is
+//       redirected to ZC_PR_ITEM_AD (created separately).
+// Note: @Metadata.allowExtensions: true is required here so the
+//       metadata extension (ZC_PR_HEADER_MDE_AD, created separately) can
+//       attach to this view instead of the interface view.
+//----------------------------------------------------------------------
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+@EndUserText.label: 'Purchase Requisition - Header (Projection)'
+
+define root view entity ZC_PR_HEADER_AD
+  provider contract transactional_query
+  as projection on ZI_PR_HEADER_AD as PurchaseRequisition
+{
+  key PrUuid,
+      PrNumber,
+      Description,
+      Requester,
+      CostCenter,
+      TotalAmount,
+      Currency,
+      Status,
+      StatusCriticality,
+      Approver,
+      ApprovedAt,
+      RejectReason,
+      CreatedBy,
+      CreatedAt,
+      LastChangedBy,
+      LastChangedAt,
+      LocalLastChangedAt,
+
+      // redirected composition - target changes to ZC_PR_ITEM_AD
+      _Item : redirected to composition child ZC_PR_ITEM_AD
+}

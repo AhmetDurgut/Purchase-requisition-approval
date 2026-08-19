@@ -1,0 +1,18 @@
+//----------------------------------------------------------------------
+// Service Definition: ZUI_PR_HEADER_AD
+// Purpose: Exposes ZC_PR_HEADER_AD (and its composition child ZC_PR_ITEM_AD)
+//          as an OData service
+// Layer:   Service
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: ZC_PR_ITEM_AD is not separately exposed - it's reached only
+//       through ZC_PR_HEADER_AD's _Item composition, since there's no
+//       standalone item access planned for this app.
+// Note: the service binding (OData V4 - UI) is a separate ADT object,
+//       not a source file, and is not part of this repo - see the
+//       setup guide for how to create and publish it.
+//----------------------------------------------------------------------
+@EndUserText.label: 'Purchase Requisition Service'
+define service ZUI_PR_HEADER_AD {
+  expose ZC_PR_HEADER_AD as PurchaseRequisition;
+}

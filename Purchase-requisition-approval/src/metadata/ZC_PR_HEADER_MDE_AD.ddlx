@@ -1,0 +1,149 @@
+//----------------------------------------------------------------------
+// Extension: ZC_PR_HEADER_MDE_AD (metadata extension)
+// Purpose: Fiori Elements UI annotations for the Purchase Requisition
+//          Object Page (plus a minimal List Report)
+// Layer:   Metadata Extension (.ddlx)
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: targets ZC_PR_HEADER_AD (projection/consumption view), not the
+//       interface view - UI annotations always belong on the
+//       consumption layer.
+// Note: the header status indicator is a @UI.dataPoint referenced by a
+//       #DATAPOINT_REFERENCE header facet; colored via @UI.criticality
+//       bound to StatusCriticality, the 0-3 code computed in
+//       ZI_PR_HEADER_AD.ddls and exposed through ZC_PR_HEADER_AD.
+// Note: submit / approve / reject / requestInfo are exposed as header
+//       toolbar buttons via @UI.identification FOR_ACTION entries;
+//       their enabled/disabled state per instance comes from
+//       LHC_PURCHASEREQUISITION=>get_instance_features, no extra
+//       annotation needed.
+// Note: @UI.headerInfo is intentionally NOT used here - this
+//       environment rejects it even on this root view
+//       ("used at wrong position (wrong scope)"); see
+//       docs/type-table-for-update-workaround.md. It only affects the
+//       Object Page title styling (typeName/title/description), not
+//       functionality - the facets, actions, and fields below all
+//       work without it.
+// Note: every annotated element must carry at least one annotation on
+//       this environment - Currency (the semantic unit for
+//       TotalAmount) gets an explicit @UI.hidden: true instead of
+//       being listed bare.
+// Note: no admin/technical field (CreatedBy/At, LastChangedBy/At,
+//       LocalLastChangedAt) or technical key (PrUuid) is annotated
+//       anywhere below, so none of them appear on any facet, field
+//       group, or table.
+//----------------------------------------------------------------------
+@Metadata.layer: #CORE
+
+annotate view ZC_PR_HEADER_AD with
+{
+  @UI.facet: [
+    {
+      id: 'StatusIndicator',
+      purpose: #HEADER,
+      type: #DATAPOINT_REFERENCE,
+      label: 'Status',
+      targetQualifier: 'StatusDP',
+      position: 10
+    },
+    {
+      id: 'GeneralInfo',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'General Information',
+      targetQualifier: 'GeneralGroup',
+      position: 10
+    },
+    {
+      id: 'AmountInfo',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Amount Information',
+      targetQualifier: 'AmountGroup',
+      position: 20
+    },
+    {
+      id: 'ApprovalInfo',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Approval Information',
+      targetQualifier: 'ApprovalGroup',
+      position: 30
+    },
+    {
+      id: 'Items',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Items',
+      targetElement: '_Item',
+      position: 40
+    }
+  ]
+
+  @UI.identification: [
+    { type: #FOR_ACTION, dataAction: 'submit', label: 'Submit' },
+    { type: #FOR_ACTION, dataAction: 'approve', label: 'Approve' },
+    { type: #FOR_ACTION, dataAction: 'reject', label: 'Reject' },
+    { type: #FOR_ACTION, dataAction: 'requestInfo', label: 'Request Info' }
+  ]
+  @UI.lineItem: [{ position: 10 }]
+  @UI.fieldGroup: [{ qualifier: 'GeneralGroup', position: 10 }]
+  PrNumber;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.fieldGroup: [{ qualifier: 'GeneralGroup', position: 20 }]
+  Description;
+
+  @UI.selectionField: [{ position: 30 }]
+  @UI.lineItem: [{ position: 40 }]
+  @UI.fieldGroup: [{ qualifier: 'GeneralGroup', position: 30 }]
+  CostCenter;
+
+  @UI.selectionField: [{ position: 10 }]
+  @UI.lineItem: [{ position: 30 }]
+  @UI.fieldGroup: [{ qualifier: 'GeneralGroup', position: 40 }]
+  Requester;
+
+  @UI.selectionField: [{ position: 20 }]
+  @UI.lineItem: [{ position: 60, criticality: 'StatusCriticality' }]
+  @UI.fieldGroup: [{ qualifier: 'GeneralGroup', position: 50 }]
+  @UI.dataPoint: { qualifier: 'StatusDP', title: 'Status', criticality: 'StatusCriticality' }
+  Status;
+
+  @UI.lineItem: [{ position: 50 }]
+  @UI.fieldGroup: [{ qualifier: 'AmountGroup', position: 10 }]
+  TotalAmount;
+
+  @UI.hidden: true
+  Currency;
+
+  @UI.fieldGroup: [{ qualifier: 'ApprovalGroup', position: 10 }]
+  Approver;
+
+  @UI.fieldGroup: [{ qualifier: 'ApprovalGroup', position: 20 }]
+  ApprovedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'ApprovalGroup', position: 30 }]
+  RejectReason;
+
+  @UI.hidden: true
+  StatusCriticality;
+
+  @UI.hidden: true
+  PrUuid;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

@@ -1,0 +1,71 @@
+//----------------------------------------------------------------------
+// View:    ZI_PR_HEADER_AD
+// Purpose: Root interface view for the Purchase Requisition RAP BO
+// Layer:   Data Model (interface)
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: This is a define ROOT view entity - the root of the composition
+//       tree; the behavior definition will be built on this view.
+// Note: composition [0..*] of ZI_PR_ITEM_AD as _Item defines the
+//       parent-child relationship; ZI_PR_ITEM_AD will define the matching
+//       association to parent.
+// Note: Admin fields are exposed and annotated with @Semantics so RAP
+//       recognises them (createdAt, createdBy, lastChangedAt = total
+//       ETag, locallyChangedAt = optimistic lock).
+// Note: StatusCriticality is a computed 0-3 Fiori criticality code
+//       (0 = none, 1 = negative, 2 = warning, 3 = positive) derived from
+//       Status. It exists only so ZI_PR_HEADER_MDE can color the status
+//       indicator via @UI.criticality, which can point at a field but
+//       cannot switch on an arbitrary string itself.
+//----------------------------------------------------------------------
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+@EndUserText.label: 'Purchase Requisition - Header (Interface)'
+
+define root view entity ZI_PR_HEADER_AD
+  as select from zpr_header_ad
+  composition [0..*] of ZI_PR_ITEM_AD as _Item
+{
+  key pr_uuid              as PrUuid,
+      pr_number            as PrNumber,
+      description          as Description,
+      requester            as Requester,
+      cost_center          as CostCenter,
+      @Semantics.amount.currencyCode: 'Currency'
+      total_amount         as TotalAmount,
+      currency             as Currency,
+      status               as Status,
+
+      // Fiori criticality code for Status, used only by @UI.criticality
+      // in ZI_PR_HEADER_MDE (DRAFT/none=0, PENDING/INFO_REQ/warning=2,
+      // APPROVED/positive=3, REJECTED/negative=1)
+      cast(
+        case status
+          when 'DRAFT'    then 0
+          when 'PENDING'  then 2
+          when 'APPROVED' then 3
+          when 'REJECTED' then 1
+          when 'INFO_REQ' then 2
+          else 0
+        end as abap.int1
+      )                    as StatusCriticality,
+
+      approver             as Approver,
+      approved_at          as ApprovedAt,
+      reject_reason        as RejectReason,
+
+      // admin fields with RAP semantics
+      @Semantics.user.createdBy: true
+      created_by           as CreatedBy,
+      @Semantics.systemDateTime.createdAt: true
+      created_at           as CreatedAt,
+      @Semantics.user.lastChangedBy: true
+      last_changed_by      as LastChangedBy,
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at      as LastChangedAt,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+
+      // expose composition
+      _Item
+}

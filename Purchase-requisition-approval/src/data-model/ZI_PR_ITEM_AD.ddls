@@ -1,0 +1,54 @@
+//----------------------------------------------------------------------
+// View:    ZI_PR_ITEM_AD
+// Purpose: Child interface view for the Purchase Requisition RAP BO
+//          (item)
+// Layer:   Data Model (interface)
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: This is a child in the composition - it is NOT a root view. It
+//       defines "association to parent ZI_PR_HEADER_AD as _Header", the
+//       mandatory back-link that completes the composition started by
+//       _Item on the header.
+// Note: ParentUuid maps the child to its header via pr_uuid.
+// Note: Admin fields carry the same @Semantics as the header, so
+//       managed RAP recognises them on the child entity too.
+//----------------------------------------------------------------------
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+@EndUserText.label: 'Purchase Requisition - Item (Interface)'
+
+define view entity ZI_PR_ITEM_AD
+  as select from zpr_item_ad
+
+  association to parent ZI_PR_HEADER_AD as _Header
+    on $projection.ParentUuid = _Header.PrUuid
+{
+  key item_uuid            as ItemUuid,
+      parent_uuid          as ParentUuid,
+      item_number          as ItemNumber,
+      material             as Material,
+      description          as Description,
+      @Semantics.quantity.unitOfMeasure: 'Unit'
+      quantity             as Quantity,
+      unit                 as Unit,
+      @Semantics.amount.currencyCode: 'Currency'
+      price                as Price,
+      @Semantics.amount.currencyCode: 'Currency'
+      amount               as Amount,
+      currency             as Currency,
+
+      // admin fields with RAP semantics
+      @Semantics.user.createdBy: true
+      created_by           as CreatedBy,
+      @Semantics.systemDateTime.createdAt: true
+      created_at           as CreatedAt,
+      @Semantics.user.lastChangedBy: true
+      last_changed_by      as LastChangedBy,
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at      as LastChangedAt,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+
+      // expose association to parent
+      _Header
+}

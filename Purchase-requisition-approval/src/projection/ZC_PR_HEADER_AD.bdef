@@ -1,0 +1,45 @@
+//----------------------------------------------------------------------
+// Behavior Projection: ZC_PR_HEADER_AD
+// Purpose: Exposes CRUD, draft actions, and custom actions from
+//          ZI_PR_HEADER_AD's behavior definition to the consumption layer
+// Layer:   Projection
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: built on interface behavior implementation class
+//       ZBP_I_PR_HEADER_AD (defined at the interface layer, not repeated
+//       here).
+// Note: draft actions are exposed as plain "use action X;" (not
+//       "use draft action X;") - "use draft;" above already puts the
+//       projection in draft context, and this environment's parser
+//       rejects the "draft" keyword here with
+//       ""action | association | create | delete | event | function |
+//       key | update" was expected, not "draft"".
+// Note: recalcTotal is intentionally NOT exposed - it is an internal
+//       determine action, invoked only programmatically via EXECUTE
+//       from calculateItemAmount, never called from the UI.
+// Note: validations and determinations from ZI_PR_HEADER_AD.bdef apply
+//       automatically and are not redeclared at the projection level.
+//----------------------------------------------------------------------
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_PR_HEADER_AD alias PurchaseRequisition
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Item { create; with draft; }
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action submit;
+  use action approve;
+  use action reject;
+  use action requestInfo;
+}

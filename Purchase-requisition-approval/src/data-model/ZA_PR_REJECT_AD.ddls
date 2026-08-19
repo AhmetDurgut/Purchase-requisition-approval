@@ -1,0 +1,20 @@
+//----------------------------------------------------------------------
+// Abstract Entity: ZA_PR_REJECT_AD
+// Purpose: Parameter structure for the reject action (rejection reason
+//          popup)
+// Layer:   Data Model (abstract entity)
+// Target:  SAP BTP ABAP Environment / S/4HANA (ABAP Cloud)
+//
+// Note: an abstract entity has no persistence and no SELECT - it only
+//       defines a structure. RAP uses it to render the action's
+//       parameter dialog in Fiori.
+// Note: referenced from the behavior definition as:
+//       action reject parameter ZA_PR_REJECT_AD
+//----------------------------------------------------------------------
+@EndUserText.label: 'PR Reject - Parameters'
+
+define abstract entity ZA_PR_REJECT_AD
+{
+  @EndUserText.label: 'Rejection Reason'
+  reject_reason : abap.char(200);
+}
